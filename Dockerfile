@@ -5,8 +5,9 @@ RUN apk add --no-cache --update \
     glib-dev openssl-dev pidgin-dev json-glib-dev libgcrypt-dev zlib-dev libwebp-dev \
     libpng-dev protobuf-c-dev libxml2-dev discount-dev sqlite-dev http-parser-dev libotr-dev \
  && cd /tmp \
- && git clone https://github.com/bitlbee/bitlbee.git \
+ && git clone http://github.com/bitlbee/bitlbee --depth 1 \
  && cd bitlbee \
+ && git fetch --unshallow \
  && ./configure --purple=1 --otr=plugin --ssl=openssl --prefix=/usr --etcdir=/etc/bitlbee \
  && make \
  && make install-bin \
