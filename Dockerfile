@@ -347,7 +347,7 @@ RUN apk add --update --no-cache findutils \
 
 # ---
 
-FROM alpine:${ALPINE_VERSION} as bitlbee-libpurple
+FROM alpine:latest as bitlbee-libpurple
 
 COPY --from=bitlbee-plugins /tmp/ /
 
