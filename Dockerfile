@@ -1,13 +1,15 @@
 FROM alpine:latest as bitlbee-build
 
+ARG BITLBEE_VERSION=3.6
+
 RUN apk add --no-cache --update \
     bash shadow build-base git python2 autoconf automake libtool mercurial intltool flex \
     glib-dev openssl-dev pidgin-dev json-glib-dev libgcrypt-dev zlib-dev libwebp-dev \
     libpng-dev protobuf-c-dev libxml2-dev discount-dev sqlite-dev http-parser-dev libotr-dev \
  && cd /tmp \
- && git clone http://github.com/bitlbee/bitlbee --depth 1 \
+ && git clone -n http://github.com/bitlbee/bitlbee \
  && cd bitlbee \
- && git fetch --unshallow \
+ && git checkout ${BITLBEE_VERSION} \
  && ./configure --purple=1 --otr=plugin --ssl=openssl --prefix=/usr --etcdir=/etc/bitlbee \
  && make \
  && make install-bin \
