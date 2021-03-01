@@ -1,10 +1,9 @@
-FROM debian:latest as bitlbee-build
+FROM alpine as bitlbee-build
 
-RUN apt-get update && apt-get install -y \
-    build-essential git python autoconf automake make gcc libtool mercurial intltool flex \
-    libglib2.0-dev libssl-dev pidgin-dev libjson-glib-dev libgcrypt20-dev libghc-zlib-dev libwebp-dev \
-    libpng-dev protobuf-compiler protobuf-c-compiler libprotobuf-dev libprotobuf-c-dev libxml2-dev lua-discount-dev libsqlite0-dev libhttp-parser-dev libotr5-dev \
- && rm -rf /var/lib/apt/lists/* \
+RUN apk add --no-cache --update \
+    bash shadow build-base git python2 autoconf automake libtool mercurial intltool flex \
+    glib-dev openssl-dev pidgin-dev json-glib-dev libgcrypt-dev zlib-dev libwebp-dev \
+    libpng-dev protobuf-c-dev libxml2-dev discount-dev sqlite-dev http-parser-dev libotr-dev \
  && cd /tmp \
  && git clone http://github.com/bitlbee/bitlbee \
  && cd bitlbee \
@@ -281,7 +280,7 @@ RUN echo SIGNAL=${SIGNAL} > /tmp/status \
 # ---
 
 
-FROM debian:latest as bitlbee-plugins
+FROM alpine:latest as bitlbee-plugins
 
 COPY --from=bitlbee-build /usr/sbin/bitlbee /tmp/usr/sbin/bitlbee
 COPY --from=bitlbee-build /usr/share/man/man8/bitlbee.8 /tmp/usr/share/man/man8/bitlbee.8
@@ -340,8 +339,7 @@ COPY --from=matrix-build /tmp/status /tmp/plugin/matrix
 COPY --from=signald-build /usr/lib/purple-2/libsignald.so /tmp/usr/lib/purple-2/libsignald.so
 COPY --from=signald-build /tmp/status /tmp/plugin/signald
 
-RUN apt-get update && apt-get install -y findutils \
- && rm -rf /var/lib/apt/lists/* \
+RUN apk add --update --no-cache findutils \
  && find /tmp/ -type f -empty -delete \
  && find /tmp/ -type d -empty -delete \
  && cat /tmp/plugin/* > /tmp/plugins \
@@ -349,11 +347,12 @@ RUN apt-get update && apt-get install -y findutils \
 
 # ---
 
-FROM debian:latest as bitlbee-libpurple
+FROM alpine:latest as bitlbee-libpurple
 
 COPY --from=bitlbee-plugins /tmp/ /
 
-ARG PKGS="tzdata libglib2.0-dev libssl1.1 libpurple-dev libpurple0"
+ARG PKGS="tzdata bash glib libssl1.1 libpurple libpurple-xmpp \
+      libpurple-oscar libpurple-bonjour"
 
 RUN addgroup -g 101 -S bitlbee \
  && adduser -u 101 -D -S -G bitlbee bitlbee \
@@ -368,8 +367,7 @@ RUN addgroup -g 101 -S bitlbee \
  && if [ ${SIPE} -eq 1 ]; then PKGS="${PKGS} libxml2"; fi \
  && if [ ${ROCKETCHAT} -eq 1 ]; then PKGS="${PKGS} discount"; fi \
  && if [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} sqlite http-parser"; fi \
- && apt-get update && apt-get install -y add ${PKGS} \
- && rm -rf /var/lib/apt/lists/* \
+ && apk add --no-cache --update ${PKGS} \
  && rm /plugins
 
 EXPOSE 6667
