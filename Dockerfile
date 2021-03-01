@@ -1,8 +1,4 @@
-ARG ALPINE_VERSION=3.12
-
-FROM alpine:${ALPINE_VERSION} as bitlbee-build
-
-ARG BITLBEE_VERSION=3.6
+FROM alpine:latest as bitlbee-build
 
 RUN apk add --no-cache --update \
     bash shadow build-base git python2 autoconf automake libtool mercurial intltool flex \
@@ -11,7 +7,6 @@ RUN apk add --no-cache --update \
  && cd /tmp \
  && git clone -n https://github.com/bitlbee/bitlbee.git \
  && cd bitlbee \
- && git checkout ${BITLBEE_VERSION} \
  && ./configure --purple=1 --otr=plugin --ssl=openssl --prefix=/usr --etcdir=/etc/bitlbee \
  && make \
  && make install-bin \
@@ -40,14 +35,12 @@ RUN echo OTR=${OTR} > /tmp/status \
 FROM bitlbee-build as facebook-build
 
 ARG FACEBOOK=1
-ARG FACEBOOK_VERSION=v1.2.0
 
 RUN echo FACEBOOK=${FACEBOOK} > /tmp/status \
  && if [ ${FACEBOOK} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/bitlbee/bitlbee-facebook.git \
        && cd bitlbee-facebook \
-       && git checkout ${FACEBOOK_VERSION} \
        && ./autogen.sh \
        && make \
        && make install \
@@ -62,14 +55,12 @@ RUN echo FACEBOOK=${FACEBOOK} > /tmp/status \
 FROM bitlbee-build as steam-build
 
 ARG STEAM=1
-ARG STEAM_VERSION=a6444d2
 
 RUN echo STEAM=${STEAM} > /tmp/status \
  && if [ ${STEAM} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/bitlbee/bitlbee-steam.git \
        && cd bitlbee-steam \
-       && git checkout ${STEAM_VERSION} \
        && ./autogen.sh \
        && make \
        && make install \
@@ -84,14 +75,12 @@ RUN echo STEAM=${STEAM} > /tmp/status \
 FROM bitlbee-build as skypeweb-build
 
 ARG SKYPEWEB=1
-ARG SKYPEWEB_VERSION=f836eeb
 
 RUN echo SKYPEWEB=${SKYPEWEB} > /tmp/status \
  && if [ ${SKYPEWEB} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/EionRobb/skype4pidgin.git \
        && cd skype4pidgin \
-       && git checkout ${SKYPEWEB_VERSION} \
        && cd skypeweb \
        && make \
        && make install \
@@ -105,14 +94,12 @@ RUN echo SKYPEWEB=${SKYPEWEB} > /tmp/status \
 FROM bitlbee-build as telegram-build
 
 ARG TELEGRAM=1
-ARG TELEGRAM_VERSION=v1.4.3
 
 RUN echo TELEGRAM=${TELEGRAM} > /tmp/status \
  && if [ ${TELEGRAM} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/majn/telegram-purple \
        && cd telegram-purple \
-       && git checkout ${TELEGRAM_VERSION} \
        && git submodule update --init --recursive \
        && ./configure \
        && make \
@@ -129,14 +116,12 @@ RUN echo TELEGRAM=${TELEGRAM} > /tmp/status \
 FROM bitlbee-build as hangouts-build
 
 ARG HANGOUTS=1
-ARG HANGOUTS_VERSION=efa7a53
 
 RUN echo HANGOUTS=${HANGOUTS} > /tmp/status \
  && if [ ${HANGOUTS} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/EionRobb/purple-hangouts.git \
        && cd purple-hangouts \
-       && git checkout ${HANGOUTS_VERSION} \
        && make \
        && make install \
        && strip /usr/lib/purple-2/libhangouts.so; \
@@ -149,7 +134,6 @@ RUN echo HANGOUTS=${HANGOUTS} > /tmp/status \
 FROM bitlbee-build as slack-build
 
 ARG SLACK=1
-ARG SLACK_VERSION=2e9fa02
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -158,7 +142,6 @@ RUN echo SLACK=${SLACK} > /tmp/status \
      then cd /tmp \
        && git clone -n https://github.com/dylex/slack-libpurple.git \
        && cd slack-libpurple \
-       && git checkout ${SLACK_VERSION} \
        && make \
        && install -d /usr/share/pixmaps/pidgin/protocols/{16,22,48} \
        && make install \
@@ -172,14 +155,12 @@ RUN echo SLACK=${SLACK} > /tmp/status \
 FROM bitlbee-build as sipe-build
 
 ARG SIPE=1
-ARG SIPE_VERSION=1.25.0
 
 RUN echo SIPE=${SIPE} > /tmp/status \
  && if [ ${SIPE} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://repo.or.cz/siplcs.git \
        && cd siplcs \
-       && git checkout ${SIPE_VERSION} \
        && ./autogen.sh \
        && ./configure --prefix=/usr \
        && make \
@@ -196,14 +177,12 @@ RUN echo SIPE=${SIPE} > /tmp/status \
 FROM bitlbee-build as discord-build
 
 ARG DISCORD=1
-ARG DISCORD_VERSION=0.4.3
 
 RUN echo DISCORD=${DISCORD} > /tmp/status \
  && if [ ${DISCORD} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/sm00th/bitlbee-discord.git \
        && cd bitlbee-discord \
-       && git checkout ${DISCORD_VERSION} \
        && ./autogen.sh \
        && ./configure --prefix=/usr \
        && make \
@@ -220,14 +199,12 @@ RUN echo DISCORD=${DISCORD} > /tmp/status \
 FROM bitlbee-build as rocketchat-build
 
 ARG ROCKETCHAT=1
-ARG ROCKETCHAT_VERSION=5da3e14
 
 RUN echo ROCKETCHAT=${ROCKETCHAT} > /tmp/status \
  && if [ ${ROCKETCHAT} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/EionRobb/purple-rocketchat.git \
        && cd purple-rocketchat \
-       && git checkout ${ROCKETCHAT_VERSION} \
        && make \
        && make install \
        && strip /usr/lib/purple-2/librocketchat.so; \
@@ -240,14 +217,12 @@ RUN echo ROCKETCHAT=${ROCKETCHAT} > /tmp/status \
 FROM bitlbee-build as mastodon-build
 
 ARG MASTODON=1
-ARG MASTODON_VERSION=v1.4.4
 
 RUN echo MASTODON=${MASTODON} > /tmp/status \
  && if [ ${MASTODON} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/kensanata/bitlbee-mastodon \
        && cd bitlbee-mastodon \
-       && git checkout ${MASTODON_VERSION} \
        && sh ./autogen.sh \
        && ./configure \
        && make \
@@ -264,22 +239,18 @@ RUN echo MASTODON=${MASTODON} > /tmp/status \
 FROM bitlbee-build as matrix-build
 
 ARG MATRIX=1
-ARG OLM_VERSION=3.1.4
-ARG MATRIX_VERSION=1d23385
 
 RUN echo MATRIX=${MATRIX} > /tmp/status \
  && if [ ${MATRIX} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://gitlab.matrix.org/matrix-org/olm.git \
        && cd olm \
-       && git checkout ${OLM_VERSION} \
        && make \
        && make install \
-       && strip /usr/local/lib/libolm.so.${OLM_VERSION} \
+       && strip /usr/local/lib/libolm.so.* \
        && cd /tmp \
        && git clone -n https://github.com/matrix-org/purple-matrix \
        && cd purple-matrix \
-       && git checkout ${MATRIX_VERSION} \
        && make \
        && make install \
        && strip /usr/lib/purple-2/libmatrix.so; \
@@ -293,14 +264,12 @@ RUN echo MATRIX=${MATRIX} > /tmp/status \
 FROM bitlbee-build as signald-build
 
 ARG SIGNAL=1
-ARG SIGNAL_VERSION=2c5b500
 
 RUN echo SIGNAL=${SIGNAL} > /tmp/status \
  && if [ ${SIGNAL} -eq 1 ]; \
      then cd /tmp \
        && git clone -n https://github.com/hoehermann/libpurple-signald \
        && cd libpurple-signald \
-       && git checkout ${SIGNAL_VERSION} \
        && make \
        && make install \
        && strip /usr/lib/purple-2/libsignald.so; \
@@ -311,7 +280,7 @@ RUN echo SIGNAL=${SIGNAL} > /tmp/status \
 # ---
 
 
-FROM alpine:${ALPINE_VERSION} as bitlbee-plugins
+FROM alpine:latest as bitlbee-plugins
 
 COPY --from=bitlbee-build /usr/sbin/bitlbee /tmp/usr/sbin/bitlbee
 COPY --from=bitlbee-build /usr/share/man/man8/bitlbee.8 /tmp/usr/share/man/man8/bitlbee.8
