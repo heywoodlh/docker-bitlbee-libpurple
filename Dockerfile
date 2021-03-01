@@ -238,7 +238,7 @@ RUN echo MASTODON=${MASTODON} > /tmp/status \
 
 FROM bitlbee-build as matrix-build
 
-ARG MATRIX=1
+ARG MATRIX=0
 
 RUN echo MATRIX=${MATRIX} > /tmp/status \
  && if [ ${MATRIX} -eq 1 ]; \
