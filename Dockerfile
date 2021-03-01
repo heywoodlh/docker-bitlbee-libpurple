@@ -5,7 +5,7 @@ RUN apk add --no-cache --update \
     glib-dev openssl-dev pidgin-dev json-glib-dev libgcrypt-dev zlib-dev libwebp-dev \
     libpng-dev protobuf-c-dev libxml2-dev discount-dev sqlite-dev http-parser-dev libotr-dev \
  && cd /tmp \
- && git clone -n https://github.com/bitlbee/bitlbee.git \
+ && git clone https://github.com/bitlbee/bitlbee.git \
  && cd bitlbee \
  && ./configure --purple=1 --otr=plugin --ssl=openssl --prefix=/usr --etcdir=/etc/bitlbee \
  && make \
@@ -39,7 +39,7 @@ ARG FACEBOOK=1
 RUN echo FACEBOOK=${FACEBOOK} > /tmp/status \
  && if [ ${FACEBOOK} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/bitlbee/bitlbee-facebook.git \
+       && git clone https://github.com/bitlbee/bitlbee-facebook.git \
        && cd bitlbee-facebook \
        && ./autogen.sh \
        && make \
@@ -59,7 +59,7 @@ ARG STEAM=1
 RUN echo STEAM=${STEAM} > /tmp/status \
  && if [ ${STEAM} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/bitlbee/bitlbee-steam.git \
+       && git clone https://github.com/bitlbee/bitlbee-steam.git \
        && cd bitlbee-steam \
        && ./autogen.sh \
        && make \
@@ -79,7 +79,7 @@ ARG SKYPEWEB=1
 RUN echo SKYPEWEB=${SKYPEWEB} > /tmp/status \
  && if [ ${SKYPEWEB} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/EionRobb/skype4pidgin.git \
+       && git clone https://github.com/EionRobb/skype4pidgin.git \
        && cd skype4pidgin \
        && cd skypeweb \
        && make \
@@ -98,7 +98,7 @@ ARG TELEGRAM=1
 RUN echo TELEGRAM=${TELEGRAM} > /tmp/status \
  && if [ ${TELEGRAM} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/majn/telegram-purple \
+       && git clone https://github.com/majn/telegram-purple \
        && cd telegram-purple \
        && git submodule update --init --recursive \
        && ./configure \
@@ -120,7 +120,7 @@ ARG HANGOUTS=1
 RUN echo HANGOUTS=${HANGOUTS} > /tmp/status \
  && if [ ${HANGOUTS} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/EionRobb/purple-hangouts.git \
+       && git clone https://github.com/EionRobb/purple-hangouts.git \
        && cd purple-hangouts \
        && make \
        && make install \
@@ -140,7 +140,7 @@ SHELL [ "/bin/bash", "-c" ]
 RUN echo SLACK=${SLACK} > /tmp/status \
  && if [ ${SLACK} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/dylex/slack-libpurple.git \
+       && git clone https://github.com/dylex/slack-libpurple.git \
        && cd slack-libpurple \
        && make \
        && install -d /usr/share/pixmaps/pidgin/protocols/{16,22,48} \
@@ -159,7 +159,7 @@ ARG SIPE=1
 RUN echo SIPE=${SIPE} > /tmp/status \
  && if [ ${SIPE} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://repo.or.cz/siplcs.git \
+       && git clone https://repo.or.cz/siplcs.git \
        && cd siplcs \
        && ./autogen.sh \
        && ./configure --prefix=/usr \
@@ -181,7 +181,7 @@ ARG DISCORD=1
 RUN echo DISCORD=${DISCORD} > /tmp/status \
  && if [ ${DISCORD} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/sm00th/bitlbee-discord.git \
+       && git clone https://github.com/sm00th/bitlbee-discord.git \
        && cd bitlbee-discord \
        && ./autogen.sh \
        && ./configure --prefix=/usr \
@@ -203,7 +203,7 @@ ARG ROCKETCHAT=1
 RUN echo ROCKETCHAT=${ROCKETCHAT} > /tmp/status \
  && if [ ${ROCKETCHAT} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/EionRobb/purple-rocketchat.git \
+       && git clone https://github.com/EionRobb/purple-rocketchat.git \
        && cd purple-rocketchat \
        && make \
        && make install \
@@ -221,7 +221,7 @@ ARG MASTODON=1
 RUN echo MASTODON=${MASTODON} > /tmp/status \
  && if [ ${MASTODON} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/kensanata/bitlbee-mastodon \
+       && git clone https://github.com/kensanata/bitlbee-mastodon \
        && cd bitlbee-mastodon \
        && sh ./autogen.sh \
        && ./configure \
@@ -243,13 +243,13 @@ ARG MATRIX=1
 RUN echo MATRIX=${MATRIX} > /tmp/status \
  && if [ ${MATRIX} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://gitlab.matrix.org/matrix-org/olm.git \
+       && git clone https://gitlab.matrix.org/matrix-org/olm.git \
        && cd olm \
        && make \
        && make install \
        && strip /usr/local/lib/libolm.so.* \
        && cd /tmp \
-       && git clone -n https://github.com/matrix-org/purple-matrix \
+       && git clone https://github.com/matrix-org/purple-matrix \
        && cd purple-matrix \
        && make \
        && make install \
@@ -268,7 +268,7 @@ ARG SIGNAL=1
 RUN echo SIGNAL=${SIGNAL} > /tmp/status \
  && if [ ${SIGNAL} -eq 1 ]; \
      then cd /tmp \
-       && git clone -n https://github.com/hoehermann/libpurple-signald \
+       && git clone https://github.com/hoehermann/libpurple-signald \
        && cd libpurple-signald \
        && make \
        && make install \
