@@ -2,7 +2,7 @@ FROM debian:latest as bitlbee-build
 
 RUN apt-get update && apt-get install -y \
     build-essential git python autoconf automake make gcc libtool mercurial intltool flex \
-    libglib2.0-dev pidgin-dev libjson-glib-dev libgcrypt20-dev libghc-zlib-dev libwebp-dev \
+    libglib2.0-dev libssl-dev pidgin-dev libjson-glib-dev libgcrypt20-dev libghc-zlib-dev libwebp-dev \
     libpng-dev libprotobuf-c-dev libxml2-dev lua-discount-dev libsqlite0-dev libhttp-parser-dev libotr5-dev \
  && rm -rf /var/lib/apt/lists/* \
  && cd /tmp \
