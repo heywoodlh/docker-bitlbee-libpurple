@@ -154,7 +154,7 @@ RUN echo SLACK=${SLACK} > /tmp/status \
 
 FROM bitlbee-build as sipe-build
 
-ARG SIPE=1
+ARG SIPE=0
 
 RUN echo SIPE=${SIPE} > /tmp/status \
  && if [ ${SIPE} -eq 1 ]; \
