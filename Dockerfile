@@ -1,9 +1,10 @@
-FROM alpine as bitlbee-build
+FROM debian as bitlbee-build
 
-RUN apk add --no-cache --update \
-    bash shadow build-base git python2 autoconf automake libtool mercurial intltool flex \
-    glib-dev openssl-dev pidgin-dev json-glib-dev libgcrypt-dev zlib-dev libwebp-dev \
-    libpng-dev protobuf-c-dev libxml2-dev discount-dev sqlite-dev http-parser-dev libotr-dev \
+RUN apt-get update && apt-get install -y \
+    build-essential git python autoconf automake libtool mercurial intltool flex \
+    libglib2.0-dev libssl-dev pidgin-dev libjson-glib-dev libgcrypt20-dev libghc-zlib-dev libwebp-dev \
+    libpng-dev protobuf-c-compiler libprotobuf-c-dev libxml2-dev discount libmarkdown2 lua-discount-dev libsqlite3-dev libhttp-parser-dev libotr5-dev \
+ && rm -rf /var/lib/apt/lists/* \
  && cd /tmp \
  && git clone http://github.com/bitlbee/bitlbee \
  && cd bitlbee \
@@ -198,7 +199,7 @@ RUN echo DISCORD=${DISCORD} > /tmp/status \
 
 FROM bitlbee-build as rocketchat-build
 
-ARG ROCKETCHAT=1
+ARG ROCKETCHAT=0
 
 RUN echo ROCKETCHAT=${ROCKETCHAT} > /tmp/status \
  && if [ ${ROCKETCHAT} -eq 1 ]; \
@@ -280,7 +281,7 @@ RUN echo SIGNAL=${SIGNAL} > /tmp/status \
 # ---
 
 
-FROM alpine:latest as bitlbee-plugins
+FROM debian as bitlbee-plugins
 
 COPY --from=bitlbee-build /usr/sbin/bitlbee /tmp/usr/sbin/bitlbee
 COPY --from=bitlbee-build /usr/share/man/man8/bitlbee.8 /tmp/usr/share/man/man8/bitlbee.8
@@ -339,35 +340,34 @@ COPY --from=matrix-build /tmp/status /tmp/plugin/matrix
 COPY --from=signald-build /usr/lib/purple-2/libsignald.so /tmp/usr/lib/purple-2/libsignald.so
 COPY --from=signald-build /tmp/status /tmp/plugin/signald
 
-RUN apk add --update --no-cache findutils \
- && find /tmp/ -type f -empty -delete \
+RUN find /tmp/ -type f -empty -delete \
  && find /tmp/ -type d -empty -delete \
  && cat /tmp/plugin/* > /tmp/plugins \
  && rm -rf /tmp/plugin
 
 # ---
 
-FROM alpine:latest as bitlbee-libpurple
+FROM debian as bitlbee-libpurple
 
 COPY --from=bitlbee-plugins /tmp/ /
 
-ARG PKGS="tzdata bash glib libssl1.1 libpurple libpurple-xmpp \
-      libpurple-oscar libpurple-bonjour"
+ARG PKGS="tzdata libglib2.0-dev libssl1.1 libpurple-bin libpurple-dev"
 
-RUN addgroup -g 101 -S bitlbee \
- && adduser -u 101 -D -S -G bitlbee bitlbee \
+RUN addgroup --gid 101 bitlbee \
+ && adduser --uid 101 --disabled-password --ingroup bitlbee --gecos "" bitlbee \
  && install -d -m 750 -o bitlbee -g bitlbee /var/lib/bitlbee \
- && source /plugins \
- && if [ ${OTR} -eq 1 ]; then PKGS="${PKGS} libotr"; fi \
+ && . /plugins \
+ && if [ ${OTR} -eq 1 ]; then PKGS="${PKGS} libotr5 libotr5-dev"; fi \
  && if [ ${FACEBOOK} -eq 1 ] || [ ${SKYPEWEB} -eq 1 ] || [ ${HANGOUTS} -eq 1 ] \
- || [ ${ROCKETCHAT} -eq 1 ] || [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} json-glib"; fi \
- && if [ ${STEAM} -eq 1 ] || [ ${TELEGRAM} -eq 1 ] || [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} libgcrypt"; fi \
- && if [ ${TELEGRAM} -eq 1 ]; then PKGS="${PKGS} zlib libwebp libpng"; fi \
- && if [ ${HANGOUTS} -eq 1 ]; then PKGS="${PKGS} protobuf-c"; fi \
- && if [ ${SIPE} -eq 1 ]; then PKGS="${PKGS} libxml2"; fi \
- && if [ ${ROCKETCHAT} -eq 1 ]; then PKGS="${PKGS} discount"; fi \
- && if [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} sqlite http-parser"; fi \
- && apk add --no-cache --update ${PKGS} \
+ || [ ${ROCKETCHAT} -eq 1 ] || [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} libjson-glib-dev"; fi \
+ && if [ ${STEAM} -eq 1 ] || [ ${TELEGRAM} -eq 1 ] || [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} libgcrypt20 libgcrypt20-dev"; fi \
+ && if [ ${TELEGRAM} -eq 1 ]; then PKGS="${PKGS} libghc-zlib-dev libwebp-dev libpng-dev"; fi \
+ && if [ ${HANGOUTS} -eq 1 ]; then PKGS="${PKGS} protobuf-c-compiler libprotobuf-c-dev"; fi \
+ && if [ ${SIPE} -eq 1 ]; then PKGS="${PKGS} libxml2-dev"; fi \
+ && if [ ${ROCKETCHAT} -eq 1 ]; then PKGS="${PKGS} discount libmarkdown2 lua-discount-dev"; fi \
+ && if [ ${MATRIX} -eq 1 ]; then PKGS="${PKGS} sqlite libhttp-parser-dev"; fi \
+ && apt-get update && apt-get install -y ${PKGS} \
+ && rm -rf /var/lib/apt/lists/* \
  && rm /plugins
 
 EXPOSE 6667
